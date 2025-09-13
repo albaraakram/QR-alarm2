@@ -24,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pickAudioBtn: Button
     private lateinit var setAlarmBtn: Button
     private lateinit var chosenLabel: TextView
+    private lateinit var testQrBtn: Button
+    private lateinit var audioStatus: TextView
+    private lateinit var qrStatus: TextView
 
     private var chosenAudio: Uri? = null
 
@@ -56,8 +59,11 @@ class MainActivity : AppCompatActivity() {
         pickAudioBtn = findViewById(R.id.pickAudioBtn)
         setAlarmBtn = findViewById(R.id.setAlarmBtn)
         chosenLabel = findViewById(R.id.chosenLabel)
+        testQrBtn = findViewById(R.id.testQrBtn)
+        audioStatus = findViewById(R.id.audioStatus)
+        qrStatus = findViewById(R.id.qrStatus)
 
-        timePicker.setIs24HourView(true)
+        timePicker.setIs24HourView(false)
 
         val saved = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
             .getString(KEY_AUDIO_URI, null)
@@ -83,6 +89,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestPostNotificationsIfNeeded()
+
+        testQrBtn.setOnClickListener {
+            startActivity(Intent(this, QrTestActivity::class.java))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateStatuses()
     }
 
     private fun scheduleAlarm() {
@@ -110,11 +125,15 @@ class MainActivity : AppCompatActivity() {
         val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val triggerAt = cal.timeInMillis
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi)
-        } else {
-            am.setExact(AlarmManager.RTC_WAKEUP, triggerAt, pi)
-        }
+        // Use AlarmClock to improve reliability and allow full-screen while locked
+        val showIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val info = AlarmManager.AlarmClockInfo(triggerAt, showIntent)
+        am.setAlarmClock(info, pi)
 
         Toast.makeText(this, getString(R.string.alarm_set), Toast.LENGTH_LONG).show()
     }
@@ -136,6 +155,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_AUDIO_URI = "audio_uri"
+        const val KEY_QR_READY = "qr_ready"
     }
 
     private fun requestPostNotificationsIfNeeded() {
@@ -145,5 +165,17 @@ class MainActivity : AppCompatActivity() {
                 requestPermissions(arrayOf(permission), 100)
             }
         }
+    }
+
+    private fun updateStatuses() {
+        val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+        val audioExists = prefs.getString(KEY_AUDIO_URI, null) != null
+        val qrReady = prefs.getBoolean(KEY_QR_READY, false)
+
+        audioStatus.text = if (audioExists) "✔" else "✖"
+        audioStatus.setTextColor(ContextCompat.getColor(this, if (audioExists) android.R.color.holo_green_light else android.R.color.holo_red_light))
+
+        qrStatus.text = if (qrReady) "✔" else "✖"
+        qrStatus.setTextColor(ContextCompat.getColor(this, if (qrReady) android.R.color.holo_green_light else android.R.color.holo_red_light))
     }
 }

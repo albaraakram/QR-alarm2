@@ -36,22 +36,52 @@
 
     <TextView
         android:id="@+id/chosenLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="لم يتم اختيار ملف"
         app:layout_constraintTop_toBottomOf="@id/pickAudioBtn"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/audioStatus"
         android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/audioStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="✖"
+        android:textSize="20sp"
+        android:textColor="@android:color/holo_red_light"
+        app:layout_constraintBaseline_toBaselineOf="@id/chosenLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/testQrBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="اختبار QR"
+        app:layout_constraintTop_toBottomOf="@id/chosenLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/qrStatus"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/qrStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="✖"
+        android:textSize="20sp"
+        android:textColor="@android:color/holo_red_light"
+        app:layout_constraintBaseline_toBaselineOf="@id/testQrBtn"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/setAlarmBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="حدد الموعد"
-        app:layout_constraintTop_toBottomOf="@id/chosenLabel"
+        app:layout_constraintTop_toBottomOf="@id/testQrBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

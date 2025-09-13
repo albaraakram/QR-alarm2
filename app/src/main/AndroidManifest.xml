@@ -28,6 +28,10 @@
             android:theme="@style/Theme.AlarmQR.FullScreen" />
 
         <activity
+            android:name=".QrTestActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
