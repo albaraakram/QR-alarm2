@@ -32,9 +32,9 @@ android {
         jvmTarget = '17'
     }
 
-    packagingOptions {
+    packaging {
         resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
@@ -61,4 +61,3 @@ dependencies {
     // Optional: constraint layout for simple UI
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
-
