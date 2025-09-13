@@ -156,6 +156,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val KEY_AUDIO_URI = "audio_uri"
         const val KEY_QR_READY = "qr_ready"
+        const val KEY_QR_HASH = "qr_hash"
     }
 
     private fun requestPostNotificationsIfNeeded() {
@@ -170,7 +171,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateStatuses() {
         val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
         val audioExists = prefs.getString(KEY_AUDIO_URI, null) != null
-        val qrReady = prefs.getBoolean(KEY_QR_READY, false)
+        val qrReady = prefs.getString(KEY_QR_HASH, null) != null || prefs.getBoolean(KEY_QR_READY, false)
 
         audioStatus.text = if (audioExists) "✔" else "✖"
         audioStatus.setTextColor(ContextCompat.getColor(this, if (audioExists) android.R.color.holo_green_light else android.R.color.holo_red_light))

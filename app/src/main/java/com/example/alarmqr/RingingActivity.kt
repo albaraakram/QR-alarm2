@@ -77,8 +77,21 @@ class RingingActivity : AppCompatActivity() {
                             scanner.process(image)
                                 .addOnSuccessListener { barcodes ->
                                     if (!handled && barcodes.isNotEmpty()) {
-                                        handled = true
-                                        stopAlarmAndFinish()
+                                        val prefs = getSharedPreferences("alarmqr", android.content.Context.MODE_PRIVATE)
+                                        val savedHash = prefs.getString(MainActivity.KEY_QR_HASH, null)
+                                        val value = barcodes.firstOrNull()?.rawValue
+                                        if (savedHash != null && value != null) {
+                                            val hash = HashUtil.sha256(value)
+                                            if (hash == savedHash) {
+                                                handled = true
+                                                stopAlarmAndFinish()
+                                            } else {
+                                                hintText.text = "رمز غير مطابق — امسح الرمز المحفوظ"
+                                            }
+                                        } else {
+                                            // لا يوجد رمز محفوظ؛ لا نتوقف
+                                            hintText.text = "لا يوجد رمز محفوظ. احفظ QR من الشاشة الرئيسية"
+                                        }
                                     }
                                 }
                                 .addOnFailureListener { }
@@ -113,4 +126,3 @@ class RingingActivity : AppCompatActivity() {
         cameraExecutor.shutdown()
     }
 }
-

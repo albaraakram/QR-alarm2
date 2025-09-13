@@ -68,11 +68,18 @@ class QrTestActivity : AppCompatActivity() {
                                 .addOnSuccessListener { barcodes ->
                                     if (!done && barcodes.isNotEmpty()) {
                                         done = true
-                                        getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
-                                            .edit()
-                                            .putBoolean(MainActivity.KEY_QR_READY, true)
-                                            .apply()
-                                        Toast.makeText(this, "تم التحقق من QR (✔)", Toast.LENGTH_SHORT).show()
+                                        val value = barcodes.firstOrNull()?.rawValue
+                                        if (value != null && value.isNotEmpty()) {
+                                            val hash = HashUtil.sha256(value)
+                                            getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+                                                .edit()
+                                                .putBoolean(MainActivity.KEY_QR_READY, true)
+                                                .putString(MainActivity.KEY_QR_HASH, hash)
+                                                .apply()
+                                            Toast.makeText(this, "تم حفظ رمز QR (✔)", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(this, "لم يتم التعرف على قيمة QR", Toast.LENGTH_SHORT).show()
+                                        }
                                         finish()
                                     }
                                 }
@@ -99,4 +106,3 @@ class QrTestActivity : AppCompatActivity() {
         cameraExecutor.shutdown()
     }
 }
-
