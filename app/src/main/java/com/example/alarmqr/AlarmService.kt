@@ -36,6 +36,11 @@ class AlarmService : Service() {
     }
 
     private fun startAlarm(audioUriStr: String?) {
+        // Mark ringing state
+        try {
+            getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+                .edit().putBoolean(MainActivity.KEY_IS_RINGING, true).apply()
+        } catch (_: Exception) {}
         // Request audio focus for alarm
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -120,6 +125,10 @@ class AlarmService : Service() {
     }
 
     private fun stopAlarm() {
+        try {
+            getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+                .edit().putBoolean(MainActivity.KEY_IS_RINGING, false).apply()
+        } catch (_: Exception) {}
         stopVolumeBoostLoop()
         try {
             mediaPlayer?.stop()
@@ -132,6 +141,10 @@ class AlarmService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        try {
+            getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+                .edit().putBoolean(MainActivity.KEY_IS_RINGING, false).apply()
+        } catch (_: Exception) {}
         stopVolumeBoostLoop()
         mediaPlayer?.release()
         mediaPlayer = null

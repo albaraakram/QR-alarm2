@@ -1,87 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Material3.Toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="منبّه QR"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:title="منبّه QR"
+        app:layout_scrollFlags="scroll|enterAlways" />
 
-    <TimePicker
-        android:id="@+id/timePicker"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <Button
-        android:id="@+id/pickAudioBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="اختر ملف صوت"
-        app:layout_constraintTop_toBottomOf="@id/timePicker"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@android:color/transparent"
+            android:showDividers="none">
 
-    <TextView
-        android:id="@+id/chosenLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="لم يتم اختيار ملف"
-        app:layout_constraintTop_toBottomOf="@id/pickAudioBtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/audioStatus"
-        android:layout_marginTop="8dp" />
+            <!-- Card: Alarm Time -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/audioStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="✖"
-        android:textSize="20sp"
-        android:textColor="@android:color/holo_red_light"
-        app:layout_constraintBaseline_toBaselineOf="@id/chosenLabel"
-        app:layout_constraintEnd_toEndOf="parent" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-    <Button
-        android:id="@+id/testQrBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="اختبار QR"
-        app:layout_constraintTop_toBottomOf="@id/chosenLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/qrStatus"
-        android:layout_marginTop="16dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="وقت المنبّه"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/qrStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="✖"
-        android:textSize="20sp"
-        android:textColor="@android:color/holo_red_light"
-        app:layout_constraintBaseline_toBaselineOf="@id/testQrBtn"
-        app:layout_constraintEnd_toEndOf="parent" />
+                    <TimePicker
+                        android:id="@+id/timePicker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-    <Button
-        android:id="@+id/setAlarmBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="حدد الموعد"
-        app:layout_constraintTop_toBottomOf="@id/testQrBtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp" />
+            <!-- Card: Audio selection -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="16dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_music_24" />
+
+                    <TextView
+                        android:id="@+id/chosenLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="لم يتم اختيار ملف" />
+
+                    <ImageView
+                        android:id="@+id/audioStatus"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_cancel_24" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/pickAudioBtn"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="اختر"
+                        android:layout_marginStart="12dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card: QR setup -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_qr_24" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="رمز QR المعتمد" />
+
+                    <ImageView
+                        android:id="@+id/qrStatus"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_cancel_24" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/testQrBtn"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="اختبار" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/resetQrBtn"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="إعادة تعيين"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/setAlarmBtn"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="حدد الموعد" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/testAlarmBtn"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="اختبار الجرس (10 ث)"
+                    android:layout_marginTop="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/stopNowBtn"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="إيقاف الجرس الآن (طوارئ)"
+                    android:layout_marginTop="8dp"
+                    app:icon="@drawable/ic_stop_24" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
@@ -25,8 +26,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var setAlarmBtn: Button
     private lateinit var chosenLabel: TextView
     private lateinit var testQrBtn: Button
-    private lateinit var audioStatus: TextView
-    private lateinit var qrStatus: TextView
+    private lateinit var resetQrBtn: Button
+    private lateinit var testAlarmBtn: Button
+    private lateinit var stopNowBtn: Button
+    private lateinit var audioStatus: ImageView
+    private lateinit var qrStatus: ImageView
 
     private var chosenAudio: Uri? = null
 
@@ -60,6 +64,9 @@ class MainActivity : AppCompatActivity() {
         setAlarmBtn = findViewById(R.id.setAlarmBtn)
         chosenLabel = findViewById(R.id.chosenLabel)
         testQrBtn = findViewById(R.id.testQrBtn)
+        resetQrBtn = findViewById(R.id.resetQrBtn)
+        testAlarmBtn = findViewById(R.id.testAlarmBtn)
+        stopNowBtn = findViewById(R.id.stopNowBtn)
         audioStatus = findViewById(R.id.audioStatus)
         qrStatus = findViewById(R.id.qrStatus)
 
@@ -92,6 +99,23 @@ class MainActivity : AppCompatActivity() {
 
         testQrBtn.setOnClickListener {
             startActivity(Intent(this, QrTestActivity::class.java))
+        }
+
+        resetQrBtn.setOnClickListener {
+            getSharedPreferences("alarmqr", Context.MODE_PRIVATE).edit()
+                .remove(KEY_QR_HASH)
+                .remove(KEY_QR_READY)
+                .apply()
+            Toast.makeText(this, "تمت إعادة تعيين رمز QR", Toast.LENGTH_SHORT).show()
+            updateStatuses()
+        }
+
+        testAlarmBtn.setOnClickListener { scheduleTestAlarm() }
+
+        stopNowBtn.setOnLongClickListener {
+            val i = Intent(this, AlarmService::class.java).apply { action = AlarmService.ACTION_STOP }
+            ContextCompat.startForegroundService(this, i)
+            true
         }
     }
 
@@ -157,6 +181,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_AUDIO_URI = "audio_uri"
         const val KEY_QR_READY = "qr_ready"
         const val KEY_QR_HASH = "qr_hash"
+        const val KEY_IS_RINGING = "is_ringing"
     }
 
     private fun requestPostNotificationsIfNeeded() {
@@ -173,10 +198,31 @@ class MainActivity : AppCompatActivity() {
         val audioExists = prefs.getString(KEY_AUDIO_URI, null) != null
         val qrReady = prefs.getString(KEY_QR_HASH, null) != null || prefs.getBoolean(KEY_QR_READY, false)
 
-        audioStatus.text = if (audioExists) "✔" else "✖"
-        audioStatus.setTextColor(ContextCompat.getColor(this, if (audioExists) android.R.color.holo_green_light else android.R.color.holo_red_light))
+        audioStatus.setImageResource(if (audioExists) R.drawable.ic_check_circle_24 else R.drawable.ic_cancel_24)
+        qrStatus.setImageResource(if (qrReady) R.drawable.ic_check_circle_24 else R.drawable.ic_cancel_24)
 
-        qrStatus.text = if (qrReady) "✔" else "✖"
-        qrStatus.setTextColor(ContextCompat.getColor(this, if (qrReady) android.R.color.holo_green_light else android.R.color.holo_red_light))
+        stopNowBtn.visibility = if (prefs.getBoolean(KEY_IS_RINGING, false)) android.view.View.VISIBLE else android.view.View.GONE
+    }
+
+    private fun scheduleTestAlarm() {
+        val cal = java.util.Calendar.getInstance()
+        cal.add(java.util.Calendar.SECOND, 10)
+        val audio = chosenAudio
+        val intent = Intent(this, AlarmReceiver::class.java).apply {
+            putExtra(AlarmService.EXTRA_AUDIO_URI, audio?.toString())
+        }
+        val requestCode = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        val pi = PendingIntent.getBroadcast(this, requestCode, intent, flags)
+        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val showIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val info = AlarmManager.AlarmClockInfo(cal.timeInMillis, showIntent)
+        am.setAlarmClock(info, pi)
+        Toast.makeText(this, "سيعمل الجرس خلال 10 ثوانٍ", Toast.LENGTH_SHORT).show()
     }
 }

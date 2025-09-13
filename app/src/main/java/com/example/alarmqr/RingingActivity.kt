@@ -23,6 +23,7 @@ class RingingActivity : AppCompatActivity() {
 
     private lateinit var previewView: PreviewView
     private lateinit var hintText: TextView
+    private lateinit var emergencyStopBtn: com.google.android.material.button.MaterialButton
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     @Volatile private var handled = false
 
@@ -47,11 +48,18 @@ class RingingActivity : AppCompatActivity() {
 
         previewView = findViewById(R.id.previewView)
         hintText = findViewById(R.id.hintText)
+        emergencyStopBtn = findViewById(R.id.emergencyStopBtn)
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+
+        emergencyStopBtn.setOnLongClickListener {
+            val stopIntent = Intent(this, AlarmService::class.java).apply { action = AlarmService.ACTION_STOP }
+            ContextCompat.startForegroundService(this, stopIntent)
+            true
         }
     }
 

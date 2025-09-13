@@ -4,5 +4,6 @@
     <string name="alarm_set">تم ضبط المنبه</string>
     <string name="need_exact_alarm_perm">يرجى السماح بالتنبيه الدقيق من الإعدادات</string>
     <string name="audio_chosen">تم اختيار ملف صوت</string>
+    <string name="qr_reset_done">تمت إعادة تعيين رمز QR</string>
+    <string name="test_alarm_in_10s">سيعمل الجرس خلال 10 ثوانٍ</string>
 </resources>
-
