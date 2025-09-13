@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AlarmQR</string>
+    <string name="alarm_set">تم ضبط المنبه</string>
+    <string name="need_exact_alarm_perm">يرجى السماح بالتنبيه الدقيق من الإعدادات</string>
+    <string name="audio_chosen">تم اختيار ملف صوت</string>
+</resources>
+
