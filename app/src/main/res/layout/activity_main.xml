@@ -90,9 +90,10 @@
 
                     <ImageView
                         android:id="@+id/audioStatus"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_cancel_24" />
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/dot_red" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/pickAudioBtn"

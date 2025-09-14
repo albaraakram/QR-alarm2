@@ -85,13 +85,12 @@ class MainActivity : AppCompatActivity() {
             pickAudioLauncher.launch(intent)
         }
 
-        setAlarmBtn.setOnClickListener {
-            ensureExactAlarmPermissionIfNeeded {
-                scheduleAlarm()
-            }
-        }
+        setAlarmBtn.setOnClickListener { onAlarmButtonClick() }
 
         requestPostNotificationsIfNeeded()
+
+        // Update button text when time changes
+        timePicker.setOnTimeChangedListener { _, _, _ -> updateAlarmButton() }
 
         testQrBtn.setOnClickListener {
             startActivity(Intent(this, QrTestActivity::class.java))
@@ -110,9 +109,66 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateStatuses()
+        updateAlarmButton()
     }
 
-    private fun scheduleAlarm() {
+    private fun scheduleAlarmForSelectedTime() {
+        val cal = nextOccurrenceFromPicker()
+        val audio = chosenAudio
+        val intent = Intent(this, AlarmReceiver::class.java).apply {
+            putExtra(AlarmService.EXTRA_AUDIO_URI, audio?.toString())
+        }
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        val pi = PendingIntent.getBroadcast(this, REQ_CODE_ALARM, intent, flags)
+
+        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val showIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val info = AlarmManager.AlarmClockInfo(cal.timeInMillis, showIntent)
+        am.setAlarmClock(info, pi)
+
+        getSharedPreferences("alarmqr", Context.MODE_PRIVATE).edit()
+            .putBoolean(KEY_ALARM_SCHEDULED, true)
+            .putLong(KEY_ALARM_TIME_MILLIS, cal.timeInMillis)
+            .apply()
+
+        Toast.makeText(this, getString(R.string.alarm_set), Toast.LENGTH_LONG).show()
+        updateAlarmButton()
+    }
+
+    private fun cancelScheduledAlarm() {
+        val intent = Intent(this, AlarmReceiver::class.java)
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        val pi = PendingIntent.getBroadcast(this, REQ_CODE_ALARM, intent, flags)
+        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        am.cancel(pi)
+        getSharedPreferences("alarmqr", Context.MODE_PRIVATE).edit()
+            .putBoolean(KEY_ALARM_SCHEDULED, false)
+            .remove(KEY_ALARM_TIME_MILLIS)
+            .apply()
+        updateAlarmButton()
+    }
+
+    private fun onAlarmButtonClick() {
+        val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+        val isRinging = prefs.getBoolean(KEY_IS_RINGING, false)
+        if (isRinging) {
+            Toast.makeText(this, "الجرس يعمل — أوقفه بمسح رمز QR", Toast.LENGTH_LONG).show()
+            return
+        }
+        val scheduled = prefs.getBoolean(KEY_ALARM_SCHEDULED, false)
+        if (scheduled) {
+            cancelScheduledAlarm()
+        } else {
+            ensureExactAlarmPermissionIfNeeded { scheduleAlarmForSelectedTime() }
+        }
+    }
+
+    private fun nextOccurrenceFromPicker(): Calendar {
         val cal = Calendar.getInstance()
         val now = cal.timeInMillis
         val hour = if (Build.VERSION.SDK_INT >= 23) timePicker.hour else timePicker.currentHour
@@ -121,33 +177,8 @@ class MainActivity : AppCompatActivity() {
         cal.set(Calendar.MILLISECOND, 0)
         cal.set(Calendar.HOUR_OF_DAY, hour)
         cal.set(Calendar.MINUTE, minute)
-        if (cal.timeInMillis <= now) {
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        val audio = chosenAudio
-        val intent = Intent(this, AlarmReceiver::class.java).apply {
-            putExtra(AlarmService.EXTRA_AUDIO_URI, audio?.toString())
-        }
-
-        val requestCode = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
-        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        val pi = PendingIntent.getBroadcast(this, requestCode, intent, flags)
-
-        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val triggerAt = cal.timeInMillis
-
-        // Use AlarmClock to improve reliability and allow full-screen while locked
-        val showIntent = PendingIntent.getActivity(
-            this,
-            0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        val info = AlarmManager.AlarmClockInfo(triggerAt, showIntent)
-        am.setAlarmClock(info, pi)
-
-        Toast.makeText(this, getString(R.string.alarm_set), Toast.LENGTH_LONG).show()
+        if (cal.timeInMillis <= now) cal.add(Calendar.DAY_OF_YEAR, 1)
+        return cal
     }
 
     private fun ensureExactAlarmPermissionIfNeeded(onReady: () -> Unit) {
@@ -170,6 +201,9 @@ class MainActivity : AppCompatActivity() {
         const val KEY_QR_READY = "qr_ready"
         const val KEY_QR_HASH = "qr_hash"
         const val KEY_IS_RINGING = "is_ringing"
+        const val KEY_ALARM_SCHEDULED = "alarm_scheduled"
+        const val KEY_ALARM_TIME_MILLIS = "alarm_time_ms"
+        const val REQ_CODE_ALARM = 10001
     }
 
     private fun requestPostNotificationsIfNeeded() {
@@ -186,7 +220,32 @@ class MainActivity : AppCompatActivity() {
         val audioExists = prefs.getString(KEY_AUDIO_URI, null) != null
         val qrReady = prefs.getString(KEY_QR_HASH, null) != null || prefs.getBoolean(KEY_QR_READY, false)
 
-        audioStatus.setImageResource(if (audioExists) R.drawable.ic_check_circle_24 else R.drawable.ic_cancel_24)
+        audioStatus.setImageResource(if (audioExists) R.drawable.dot_green else R.drawable.dot_red)
         qrStatus.setImageResource(if (qrReady) R.drawable.dot_green else R.drawable.dot_red)
+    }
+
+    private fun updateAlarmButton() {
+        val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+        val isRinging = prefs.getBoolean(KEY_IS_RINGING, false)
+        val timeStr = formatSelectedTime()
+        if (isRinging) {
+            setAlarmBtn.isEnabled = false
+            setAlarmBtn.text = "يَرِنّ — امسح QR"
+            return
+        }
+        setAlarmBtn.isEnabled = true
+        val scheduled = prefs.getBoolean(KEY_ALARM_SCHEDULED, false)
+        setAlarmBtn.text = if (scheduled) "إيقاف $timeStr" else "تشغيل $timeStr"
+    }
+
+    private fun formatSelectedTime(): String {
+        val hour = if (Build.VERSION.SDK_INT >= 23) timePicker.hour else timePicker.currentHour
+        val minute = if (Build.VERSION.SDK_INT >= 23) timePicker.minute else timePicker.currentMinute
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.HOUR_OF_DAY, hour)
+        cal.set(Calendar.MINUTE, minute)
+        cal.set(Calendar.SECOND, 0)
+        val fmt = java.text.SimpleDateFormat("h:mm a", java.util.Locale("ar"))
+        return fmt.format(cal.time)
     }
 }
