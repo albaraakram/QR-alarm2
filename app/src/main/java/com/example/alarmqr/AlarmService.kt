@@ -21,6 +21,7 @@ class AlarmService : Service() {
     private lateinit var audioManager: AudioManager
     private val handler = Handler(Looper.getMainLooper())
     private var volumeBoostRunnable: Runnable? = null
+    private var autoStopRunnable: Runnable? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -79,6 +80,10 @@ class AlarmService : Service() {
         forceMaxAlarmVolume()
         startVolumeBoostLoop()
 
+        // Auto-stop after 25 minutes if not stopped by QR
+        autoStopRunnable = Runnable { stopAlarm() }
+        handler.postDelayed(autoStopRunnable!!, MAX_RING_MS)
+
         val uri = audioUriStr?.let { Uri.parse(it) }
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
@@ -130,6 +135,8 @@ class AlarmService : Service() {
                 .edit().putBoolean(MainActivity.KEY_IS_RINGING, false).apply()
         } catch (_: Exception) {}
         stopVolumeBoostLoop()
+        autoStopRunnable?.let { handler.removeCallbacks(it) }
+        autoStopRunnable = null
         try {
             mediaPlayer?.stop()
         } catch (_: Exception) {}
@@ -146,6 +153,8 @@ class AlarmService : Service() {
                 .edit().putBoolean(MainActivity.KEY_IS_RINGING, false).apply()
         } catch (_: Exception) {}
         stopVolumeBoostLoop()
+        autoStopRunnable?.let { handler.removeCallbacks(it) }
+        autoStopRunnable = null
         mediaPlayer?.release()
         mediaPlayer = null
     }
@@ -158,5 +167,6 @@ class AlarmService : Service() {
         const val EXTRA_AUDIO_URI = "extra_audio_uri"
         const val ACTION_START = "com.example.alarmqr.action.START"
         const val ACTION_STOP = "com.example.alarmqr.action.STOP"
+        const val MAX_RING_MS = 25L * 60L * 1000L
     }
 }

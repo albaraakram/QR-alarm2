@@ -16,6 +16,8 @@ import android.widget.TimePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.core.content.ContextCompat
 import java.util.Calendar
 
@@ -56,6 +58,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        setSupportActionBar(findViewById(R.id.toolbar))
 
         timePicker = findViewById(R.id.timePicker)
         pickAudioBtn = findViewById(R.id.pickAudioBtn)
@@ -160,6 +164,11 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "الجرس يعمل — أوقفه بمسح رمز QR", Toast.LENGTH_LONG).show()
             return
         }
+        val qrReady = prefs.getString(KEY_QR_HASH, null) != null || prefs.getBoolean(KEY_QR_READY, false)
+        if (!qrReady) {
+            Toast.makeText(this, "يرجى اختيار رمز QR أولاً", Toast.LENGTH_LONG).show()
+            return
+        }
         val scheduled = prefs.getBoolean(KEY_ALARM_SCHEDULED, false)
         if (scheduled) {
             cancelScheduledAlarm()
@@ -247,5 +256,20 @@ class MainActivity : AppCompatActivity() {
         cal.set(Calendar.SECOND, 0)
         val fmt = java.text.SimpleDateFormat("h:mm a", java.util.Locale("ar"))
         return fmt.format(cal.time)
+    }
+
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
