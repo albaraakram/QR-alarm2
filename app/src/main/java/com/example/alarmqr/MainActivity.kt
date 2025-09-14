@@ -27,8 +27,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var chosenLabel: TextView
     private lateinit var testQrBtn: Button
     private lateinit var resetQrBtn: Button
-    private lateinit var testAlarmBtn: Button
-    private lateinit var stopNowBtn: Button
     private lateinit var audioStatus: ImageView
     private lateinit var qrStatus: ImageView
 
@@ -65,8 +63,6 @@ class MainActivity : AppCompatActivity() {
         chosenLabel = findViewById(R.id.chosenLabel)
         testQrBtn = findViewById(R.id.testQrBtn)
         resetQrBtn = findViewById(R.id.resetQrBtn)
-        testAlarmBtn = findViewById(R.id.testAlarmBtn)
-        stopNowBtn = findViewById(R.id.stopNowBtn)
         audioStatus = findViewById(R.id.audioStatus)
         qrStatus = findViewById(R.id.qrStatus)
 
@@ -108,14 +104,6 @@ class MainActivity : AppCompatActivity() {
                 .apply()
             Toast.makeText(this, "تمت إعادة تعيين رمز QR", Toast.LENGTH_SHORT).show()
             updateStatuses()
-        }
-
-        testAlarmBtn.setOnClickListener { scheduleTestAlarm() }
-
-        stopNowBtn.setOnLongClickListener {
-            val i = Intent(this, AlarmService::class.java).apply { action = AlarmService.ACTION_STOP }
-            ContextCompat.startForegroundService(this, i)
-            true
         }
     }
 
@@ -199,30 +187,6 @@ class MainActivity : AppCompatActivity() {
         val qrReady = prefs.getString(KEY_QR_HASH, null) != null || prefs.getBoolean(KEY_QR_READY, false)
 
         audioStatus.setImageResource(if (audioExists) R.drawable.ic_check_circle_24 else R.drawable.ic_cancel_24)
-        qrStatus.setImageResource(if (qrReady) R.drawable.ic_check_circle_24 else R.drawable.ic_cancel_24)
-
-        stopNowBtn.visibility = if (prefs.getBoolean(KEY_IS_RINGING, false)) android.view.View.VISIBLE else android.view.View.GONE
-    }
-
-    private fun scheduleTestAlarm() {
-        val cal = java.util.Calendar.getInstance()
-        cal.add(java.util.Calendar.SECOND, 10)
-        val audio = chosenAudio
-        val intent = Intent(this, AlarmReceiver::class.java).apply {
-            putExtra(AlarmService.EXTRA_AUDIO_URI, audio?.toString())
-        }
-        val requestCode = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
-        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        val pi = PendingIntent.getBroadcast(this, requestCode, intent, flags)
-        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val showIntent = PendingIntent.getActivity(
-            this,
-            0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        val info = AlarmManager.AlarmClockInfo(cal.timeInMillis, showIntent)
-        am.setAlarmClock(info, pi)
-        Toast.makeText(this, "سيعمل الجرس خلال 10 ثوانٍ", Toast.LENGTH_SHORT).show()
+        qrStatus.setImageResource(if (qrReady) R.drawable.dot_green else R.drawable.dot_red)
     }
 }

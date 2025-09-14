@@ -28,15 +28,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="16dp" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/emergencyStopBtn"
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="إيقاف طوارئ (ضغط مطوّل)"
-        app:icon="@drawable/ic_stop_24"
-        app:layout_constraintBottom_toTopOf="@id/hintText"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+    
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -46,11 +46,19 @@
                         android:textStyle="bold"
                         android:textSize="18sp" />
 
-                    <TimePicker
-                        android:id="@+id/timePicker"
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp" />
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_rounded_box"
+                        android:padding="8dp">
+
+                        <TimePicker
+                            android:id="@+id/timePicker"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent" />
+                    </FrameLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -124,16 +132,17 @@
 
                     <ImageView
                         android:id="@+id/qrStatus"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_cancel_24" />
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/dot_red" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/testQrBtn"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="اختبار" />
+                        android:text="اختيار" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/resetQrBtn"
@@ -157,23 +166,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="حدد الموعد" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/testAlarmBtn"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="اختبار الجرس (10 ث)"
-                    android:layout_marginTop="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/stopNowBtn"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="إيقاف الجرس الآن (طوارئ)"
-                    android:layout_marginTop="8dp"
-                    app:icon="@drawable/ic_stop_24" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
