@@ -1,0 +1,22 @@
+﻿<resources>
+    <string name='app_name'>Alarm QR</string>
+    <string name='alarm_time_label'>Alarm time</string>
+    <string name='set_alarm'>Pick time</string>
+    <string name='select_ringtone'>Select ringtone</string>
+    <string name='register_qr'>Register QR</string>
+    <string name='save_alarm'>Save</string>
+    <string name='alarm_active'>Alarm is ringing - settings locked</string>
+    <string name='scan_to_stop'>Scan the QR code to stop the alarm</string>
+    <string name='alarm_stopped'>Alarm stopped</string>
+    <string name='missing_qr'>Please register a QR code first</string>
+    <string name='missing_ringtone'>Choose an alarm ringtone</string>
+    <string name='alarm_set'>Alarm set</string>
+    <string name='alarm_service_channel'>Wake-up alarm</string>
+    <string name='alarm_notification_title'>Wake up</string>
+    <string name='alarm_notification_body'>Scan the QR code to stop the alarm</string>
+    <string name='stop_alarm'>Stop alarm</string>
+    <string name='alarm_toggle_label'>Enable alarm</string>
+    <string name='alarm_in_time'>Alarm in %1 hr %2 min</string>
+    <string name='alarm_requires_setup'>Please set the time, choose a ringtone and register a QR first</string>
+    <string name='alarm_disabled_toast'>Alarm disabled</string>
+</resources>

@@ -1,18 +1,22 @@
-<resources>
+я╗┐<resources>
     <string name='app_name'>Alarm QR</string>
-    <string name='alarm_time_label'>ц▐╩ ╟суф╚х</string>
-    <string name='set_alarm'>═╧╧ ╟сц▐╩</string>
-    <string name='select_ringtone'>╟╬╩╤ ╟сф█у╔</string>
-    <string name='register_qr'>╩╙╠эс ╤у╥ QR</string>
-    <string name='save_alarm'>═▌┘</string>
-    <string name='alarm_active'>╟суф╚х э┌ус - ╟с╟┌╧╟╧╟╩ у▐▌с╔</string>
-    <string name='scan_to_stop'>╟у╙═ ╤у╥ QR с┼э▐╟▌ ╟суф╚х</string>
-    <string name='alarm_stopped'>╩у ┼э▐╟▌ ╟суф╚х</string>
-    <string name='missing_qr'>э╠╚ ╩╙╠эс ╤у╥ QR ├цс╟Ё</string>
-    <string name='missing_ringtone'>╟╬╩╤ ф█у╔ ссуф╚х</string>
-    <string name='alarm_set'>╩у ╓╚╪ ╟суф╚х</string>
-    <string name='alarm_service_channel'>╩ф╚эх ╟с╟╙╩э▐╟┘</string>
-    <string name='alarm_notification_title'>ц▐╩ ╟с╟╙╩э▐╟┘</string>
-    <string name='alarm_notification_body'>э╠╚ у╙═ ╤у╥ QR с┼э▐╟▌ ╟суф╚х</string>
-    <string name='stop_alarm'>┼э▐╟▌ ╟суф╚х</string>
+    <string name='alarm_time_label'>┘И┘В╪к ╪з┘Д┘Е┘Ж╪и┘З</string>
+    <string name='set_alarm'>╪н╪п╪п ╪з┘Д┘И┘В╪к</string>
+    <string name='select_ringtone'>╪з╪о╪к╪▒ ╪з┘Д┘Ж╪║┘Е╪й</string>
+    <string name='register_qr'>╪к╪│╪м┘К┘Д ╪▒┘Е╪▓ QR</string>
+    <string name='save_alarm'>╪н┘Б╪╕</string>
+    <string name='alarm_active'>╪з┘Д┘Е┘Ж╪и┘З ┘К╪╣┘Е┘Д - ╪з┘Д╪з╪╣╪п╪з╪п╪з╪к ┘Е┘В┘Б┘Д╪й</string>
+    <string name='scan_to_stop'>╪з┘Е╪│╪н ╪▒┘Е╪▓ QR ┘Д╪е┘К┘В╪з┘Б ╪з┘Д┘Е┘Ж╪и┘З</string>
+    <string name='alarm_stopped'>╪к┘Е ╪е┘К┘В╪з┘Б ╪з┘Д┘Е┘Ж╪и┘З</string>
+    <string name='missing_qr'>┘К╪м╪и ╪к╪│╪м┘К┘Д ╪▒┘Е╪▓ QR ╪г┘И┘Д╪з┘Л</string>
+    <string name='missing_ringtone'>╪з╪о╪к╪▒ ┘Ж╪║┘Е╪й ┘Д┘Д┘Е┘Ж╪и┘З</string>
+    <string name='alarm_set'>╪к┘Е ╪╢╪и╪╖ ╪з┘Д┘Е┘Ж╪и┘З</string>
+    <string name='alarm_service_channel'>╪к┘Ж╪и┘К┘З ╪з┘Д╪з╪│╪к┘К┘В╪з╪╕</string>
+    <string name='alarm_notification_title'>┘И┘В╪к ╪з┘Д╪з╪│╪к┘К┘В╪з╪╕</string>
+    <string name='alarm_notification_body'>┘К╪м╪и ┘Е╪│╪н ╪▒┘Е╪▓ QR ┘Д╪е┘К┘В╪з┘Б ╪з┘Д┘Е┘Ж╪и┘З</string>
+    <string name='stop_alarm'>╪е┘К┘В╪з┘Б ╪з┘Д┘Е┘Ж╪и┘З</string>
+    <string name='alarm_toggle_label'>╪к╪┤╪║┘К┘Д ╪з┘Д┘Е┘Ж╪и┘З</string>
+    <string name='alarm_in_time'>╪│┘К╪▒┘Ж ╪з┘Д┘Е┘Ж╪и┘З ╪и╪╣╪п %1 ╪│╪з╪╣╪й ┘И%2 ╪п┘В┘К┘В╪й</string>
+    <string name='alarm_requires_setup'>┘К╪▒╪м┘Й ╪╢╪и╪╖ ╪з┘Д┘И┘В╪к ┘И╪з╪о╪к┘К╪з╪▒ ╪з┘Д┘Ж╪║┘Е╪й ┘И╪к╪│╪м┘К┘Д ╪▒┘Е╪▓ QR ╪г┘И┘Д╪з┘Л</string>
+    <string name='alarm_disabled_toast'>╪к┘Е ╪е┘К┘В╪з┘Б ╪з┘Д┘Е┘Ж╪и┘З</string>
 </resources>

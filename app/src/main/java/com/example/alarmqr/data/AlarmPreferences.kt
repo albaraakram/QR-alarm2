@@ -1,4 +1,4 @@
-package com.example.alarmqr.data
+﻿package com.example.alarmqr.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -19,13 +19,15 @@ class AlarmPreferences(private val context: Context) {
     private val ringtoneUriKey = stringPreferencesKey("ringtone_uri")
     private val qrPayloadKey = stringPreferencesKey("qr_payload")
     private val alarmActiveKey = booleanPreferencesKey("alarm_active")
+    private val alarmEnabledKey = booleanPreferencesKey("alarm_enabled")
 
     val alarmConfig: Flow<AlarmConfig> = context.alarmDataStore.data.map { prefs ->
         AlarmConfig(
             alarmTimeMillis = prefs[alarmTimeKey],
             ringtoneUri = prefs[ringtoneUriKey],
             qrPayload = prefs[qrPayloadKey],
-            isActive = prefs[alarmActiveKey] ?: false
+            isActive = prefs[alarmActiveKey] ?: false,
+            isEnabled = prefs[alarmEnabledKey] ?: false
         )
     }
 
@@ -49,12 +51,19 @@ class AlarmPreferences(private val context: Context) {
             prefs.remove(ringtoneUriKey)
             prefs.remove(qrPayloadKey)
             prefs[alarmActiveKey] = false
+            prefs[alarmEnabledKey] = false
         }
     }
 
     suspend fun setAlarmActive(active: Boolean) {
         context.alarmDataStore.edit { prefs ->
             prefs[alarmActiveKey] = active
+        }
+    }
+
+    suspend fun setEnabled(enabled: Boolean) {
+        context.alarmDataStore.edit { prefs ->
+            prefs[alarmEnabledKey] = enabled
         }
     }
 }

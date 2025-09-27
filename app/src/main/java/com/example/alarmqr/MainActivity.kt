@@ -1,4 +1,4 @@
-﻿package com.example.alarmqr
+package com.example.alarmqr
 
 import android.Manifest
 import android.app.AlarmManager
@@ -26,17 +26,32 @@ import java.util.Calendar
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
+    private fun formatDurationUntil(triggerAt: Long): Pair<Long, Long> {
+        val diff = triggerAt - System.currentTimeMillis()
+        val hours = if (diff > 0) diff / 3600000 else 0
+        val minutes = if (diff > 0) (diff % 3600000) / 60000 else 0
+        return hours to minutes
+    }
+
+    private fun nextOccurrenceFromStoredOrNow(): Long? {
+        val stored = selectedAlarmTimeMillis ?: return null
+        val calStored = java.util.Calendar.getInstance().apply { timeInMillis = stored }
+        val h = calStored.get(java.util.Calendar.HOUR_OF_DAY)
+        val m = calStored.get(java.util.Calendar.MINUTE)
+        return resolveNextTriggerMillis(h, m)
+    }
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var preferences: AlarmPreferences
     private lateinit var scheduler: AlarmScheduler
 
-    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
     private var selectedAlarmTimeMillis: Long? = null
     private var selectedRingtoneUri: Uri? = null
     private var storedQrPayload: String? = null
     private var isAlarmActive: Boolean = false
+    private var isAlarmEnabled: Boolean = false
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
         val denied = results.filterValues { !it }.keys
@@ -80,6 +95,36 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Toggle enable/disable alarm
+        binding.alarmEnabledSwitch.setOnCheckedChangeListener { _, checked ->
+            if (isAlarmActive) {
+                binding.alarmEnabledSwitch.isChecked = true
+                return@setOnCheckedChangeListener
+            }
+            if (checked) {
+                val triggerAt = nextOccurrenceFromStoredOrNow()
+                val uri = selectedRingtoneUri
+                val qr = storedQrPayload
+                if (triggerAt == null || uri == null || qr.isNullOrEmpty()) {
+                    Toast.makeText(this, getString(R.string.alarm_requires_setup), Toast.LENGTH_LONG).show()
+                    binding.alarmEnabledSwitch.isChecked = false
+                } else {
+                    lifecycleScope.launch {
+                        preferences.updateAlarm(triggerAt, uri.toString(), qr)
+                        scheduler.schedule(triggerAt)
+                        preferences.setEnabled(true)
+                        val (h,m) = formatDurationUntil(triggerAt)
+                        Toast.makeText(this@MainActivity, getString(R.string.alarm_in_time, h, m), Toast.LENGTH_LONG).show()
+                    }
+                }
+            } else {
+                scheduler.cancel()
+                lifecycleScope.launch { preferences.setEnabled(false) }
+                Toast.makeText(this, getString(R.string.alarm_disabled_toast), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
         preferences = AlarmPreferences(applicationContext)
         scheduler = AlarmScheduler(applicationContext)
 
@@ -93,7 +138,7 @@ class MainActivity : AppCompatActivity() {
                 selectedAlarmTimeMillis = config.alarmTimeMillis
                 selectedRingtoneUri = config.ringtoneUri?.toUri()
                 storedQrPayload = config.qrPayload
-                isAlarmActive = config.isActive
+                isAlarmActive = config.isActive\r\n                isAlarmEnabled = config.isEnabled
                 updateUi()
             }
         }
@@ -123,7 +168,7 @@ class MainActivity : AppCompatActivity() {
             binding.timeValue.text = timeFormat.format(Calendar.getInstance().apply { timeInMillis = scheduledTime }.time)
         }
 
-        TimePickerDialog(this, listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+        TimePickerDialog(this, listener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show()
     }
 
     private fun pickRingtone() {
@@ -183,11 +228,17 @@ class MainActivity : AppCompatActivity() {
         binding.ringtoneValue.text = selectedRingtoneUri?.let { resolveRingtoneTitle(it) } ?: ""
 
         binding.lockMessage.visibility = if (isAlarmActive) android.view.View.VISIBLE else android.view.View.GONE
-        val enabled = !isAlarmActive
-        binding.setTimeButton.isEnabled = enabled
-        binding.selectRingtoneButton.isEnabled = enabled
-        binding.registerQrButton.isEnabled = enabled
-        binding.saveButton.isEnabled = enabled
+        val enabledInputs = !isAlarmActive
+        binding.setTimeButton.isEnabled = enabledInputs
+        binding.selectRingtoneButton.isEnabled = enabledInputs
+        binding.registerQrButton.isEnabled = enabledInputs
+        binding.saveButton.isEnabled = enabledInputs
+
+        binding.alarmEnabledSwitch.isEnabled = !isAlarmActive
+        binding.alarmEnabledSwitch.isChecked = isAlarmEnabled
+
+        val next = if (isAlarmEnabled) nextOccurrenceFromStoredOrNow() else null
+        binding.nextAlarmInfo.text = next?.let { val (h,m)=formatDurationUntil(it); getString(R.string.alarm_in_time, h, m) } ?: ""
     }
 
     private fun resolveNextTriggerMillis(hour: Int, minute: Int): Long {
