@@ -1,4 +1,4 @@
-package com.example.alarmqr
+ï»¿package com.example.alarmqr
 
 import android.Manifest
 import android.app.AlarmManager
@@ -12,7 +12,6 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.AlarmManagerCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.example.alarmqr.data.AlarmPreferences
@@ -42,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
         val denied = results.filterValues { !it }.keys
         if (denied.isNotEmpty()) {
-            Toast.makeText(this, "íÌÈ ãäÍ ÇáÕáÇÍíÇÊ ÇáãØáæÈÉ áÚãá ÇáÊØÈíŞ", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "ÙŠØ¬Ø¨ Ù…Ù†Ø­ Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ§Øª Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø© Ù„Ø¹Ù…Ù„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -63,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         val contents = result.contents
         if (contents != null) {
             storedQrPayload = contents
-            Toast.makeText(this, "Êã ÍİÙ ÑãÒ QR", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "ØªÙ… Ø­ÙØ¸ Ø±Ù…Ø² QR", Toast.LENGTH_SHORT).show()
             lifecycleScope.launch {
                 preferences.updateAlarm(
                     timeMillis = selectedAlarmTimeMillis,
@@ -72,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         } else {
-            Toast.makeText(this, "áã íÊã ÇáÊŞÇØ ÑãÒ", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Ù„Ù… ÙŠØªÙ… Ø§Ù„ØªÙ‚Ø§Ø· Ø±Ù…Ø²", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -136,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         if (isAlarmActive) return
         val options = ScanOptions().apply {
             setDesiredBarcodeFormats(ScanOptions.QR_CODE)
-            setPrompt("æÌøå ÇáßÇãíÑÇ äÍæ ÑãÒ QR")
+            setPrompt("ÙˆØ¬Ù‘Ù‡ Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ Ù†Ø­Ùˆ Ø±Ù…Ø² QR")
             setBeepEnabled(false)
         }
         qrEnrollmentLauncher.launch(options)
@@ -170,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun ensureExactAlarmPermission() {
         val alarmManager = getSystemService(AlarmManager::class.java)
-        if (alarmManager != null && !AlarmManagerCompat.canScheduleExactAlarms(alarmManager)) {
+        if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
             val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
             startActivity(intent)
         }
@@ -209,3 +208,4 @@ class MainActivity : AppCompatActivity() {
         return ringtone?.getTitle(this) ?: uri.lastPathSegment.orEmpty()
     }
 }
+
