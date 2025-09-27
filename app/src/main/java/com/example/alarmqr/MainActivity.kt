@@ -250,7 +250,10 @@ class MainActivity : AppCompatActivity() {
         binding.alarmEnabledSwitch.isChecked = isAlarmEnabled
 
         val next = if (isAlarmEnabled) nextOccurrenceFromStoredOrNow() else null
-        binding.nextAlarmInfo.text = next?.let { val (h,m)=formatDurationUntil(it); getString(R.string.alarm_in_time, h, m) } ?: ""
+        binding.nextAlarmInfo.text = next?.let {
+            val (hours, minutes) = formatDurationUntil(it)
+            getString(R.string.alarm_in_time, hours, minutes)
+        } ?: ""
     }
 
     private fun resolveNextTriggerMillis(hour: Int, minute: Int): Long {
