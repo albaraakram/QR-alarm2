@@ -19,4 +19,6 @@
     <string name='alarm_in_time'>سيرن المنبه بعد %1 ساعة و%2 دقيقة</string>
     <string name='alarm_requires_setup'>يرجى ضبط الوقت واختيار النغمة وتسجيل رمز QR أولاً</string>
     <string name='alarm_disabled_toast'>تم إيقاف المنبه</string>
+    <string name="qr_prompt">وجّه الكاميرا نحو رمز QR</string>
 </resources>
+

@@ -1,4 +1,4 @@
-package com.example.alarmqr
+﻿package com.example.alarmqr
 
 import android.Manifest
 import android.app.AlarmManager
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
         val denied = results.filterValues { !it }.keys
         if (denied.isNotEmpty()) {
-            Toast.makeText(this, "يجب منح الصلاحيات المطلوبة لعمل التطبيق", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "ظٹط¬ط¨ ظ…ظ†ط­ ط§ظ„طµظ„ط§ط­ظٹط§طھ ط§ظ„ظ…ط·ظ„ظˆط¨ط© ظ„ط¹ظ…ظ„ ط§ظ„طھط·ط¨ظٹظ‚", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         val contents = result.contents
         if (contents != null) {
             storedQrPayload = contents
-            Toast.makeText(this, "تم حفظ رمز QR", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "طھظ… ط­ظپط¸ ط±ظ…ط² QR", Toast.LENGTH_SHORT).show()
             lifecycleScope.launch {
                 preferences.updateAlarm(
                     timeMillis = selectedAlarmTimeMillis,
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         } else {
-            Toast.makeText(this, "لم يتم التقاط رمز", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "ظ„ظ… ظٹطھظ… ط§ظ„طھظ‚ط§ط· ط±ظ…ط²", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
         if (isAlarmActive) return
         val options = ScanOptions().apply {
             setDesiredBarcodeFormats(ScanOptions.QR_CODE)
-            setPrompt("وجّه الكاميرا نحو رمز QR")
+            setPrompt(getString(R.string.qr_prompt))
             setBeepEnabled(false)
         }
         qrEnrollmentLauncher.launch(options)
@@ -259,4 +259,5 @@ class MainActivity : AppCompatActivity() {
         return ringtone?.getTitle(this) ?: uri.lastPathSegment.orEmpty()
     }
 }
+
 

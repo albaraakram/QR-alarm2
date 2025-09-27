@@ -19,4 +19,6 @@
     <string name='alarm_in_time'>Alarm in %1 hr %2 min</string>
     <string name='alarm_requires_setup'>Please set the time, choose a ringtone and register a QR first</string>
     <string name='alarm_disabled_toast'>Alarm disabled</string>
+    <string name="qr_prompt">Point the camera at the QR code</string>
 </resources>
+
