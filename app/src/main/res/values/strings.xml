@@ -1,0 +1,18 @@
+<resources>
+    <string name='app_name'>Alarm QR</string>
+    <string name='alarm_time_label'>זÞÊ ÇבדהÈו</string>
+    <string name='set_alarm'>ÍÏÏ ÇבזÞÊ</string>
+    <string name='select_ringtone'>ÇÎÊÑ ÇבהÛדÉ</string>
+    <string name='register_qr'>ÊÓÌםב ÑדÒ QR</string>
+    <string name='save_alarm'>ÍÝÙ</string>
+    <string name='alarm_active'>ÇבדהÈו םÚדב - ÇבÇÚÏÇÏÇÊ דÞÝבÉ</string>
+    <string name='scan_to_stop'>ÇדÓÍ ÑדÒ QR בÅםÞÇÝ ÇבדהÈו</string>
+    <string name='alarm_stopped'>Êד ÅםÞÇÝ ÇבדהÈו</string>
+    <string name='missing_qr'>םÌÈ ÊÓÌםב ÑדÒ QR ÃזבÇנ</string>
+    <string name='missing_ringtone'>ÇÎÊÑ הÛדÉ בבדהÈו</string>
+    <string name='alarm_set'>Êד ÖÈØ ÇבדהÈו</string>
+    <string name='alarm_service_channel'>ÊהÈםו ÇבÇÓÊםÞÇÙ</string>
+    <string name='alarm_notification_title'>זÞÊ ÇבÇÓÊםÞÇÙ</string>
+    <string name='alarm_notification_body'>םÌÈ דÓÍ ÑדÒ QR בÅםÞÇÝ ÇבדהÈו</string>
+    <string name='stop_alarm'>ÅםÞÇÝ ÇבדהÈו</string>
+</resources>

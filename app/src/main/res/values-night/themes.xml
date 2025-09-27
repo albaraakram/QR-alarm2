@@ -1,0 +1,10 @@
+<resources xmlns:tools='http://schemas.android.com/tools'>
+    <style name='Theme.AlarmQR' parent='Theme.Material3.DayNight.NoActionBar'>
+        <item name='android:statusBarColor'>@color/purple_700</item>
+    </style>
+
+    <style name='Theme.AlarmQR.Alarm' parent='Theme.Material3.DayNight.NoActionBar'>
+        <item name='android:statusBarColor'>@color/alarm_red</item>
+        <item name='android:navigationBarColor'>@color/alarm_red</item>
+    </style>
+</resources>

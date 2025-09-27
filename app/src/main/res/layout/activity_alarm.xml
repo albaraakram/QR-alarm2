@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android='http://schemas.android.com/apk/res/android'
+    xmlns:app='http://schemas.android.com/apk/res-auto'
+    xmlns:tools='http://schemas.android.com/tools'
+    android:layout_width='match_parent'
+    android:layout_height='match_parent'
+    android:background='@color/alarm_red'
+    android:padding='24dp'
+    tools:context='.AlarmActivity'>
+
+    <TextView
+        android:id='@+id/alarmTitle'
+        android:layout_width='0dp'
+        android:layout_height='wrap_content'
+        android:text='@string/alarm_notification_title'
+        android:textColor='@color/white'
+        android:textAppearance='@style/TextAppearance.Material3.DisplayMedium'
+        android:textAlignment='center'
+        app:layout_constraintTop_toTopOf='parent'
+        app:layout_constraintStart_toStartOf='parent'
+        app:layout_constraintEnd_toEndOf='parent' />
+
+    <TextClock
+        android:id='@+id/timeClock'
+        android:layout_width='wrap_content'
+        android:layout_height='wrap_content'
+        android:format12Hour='hh:mm'
+        android:format24Hour='HH:mm'
+        android:textColor='@color/white'
+        android:textAppearance='@style/TextAppearance.Material3.DisplayLarge'
+        app:layout_constraintTop_toBottomOf='@id/alarmTitle'
+        app:layout_constraintStart_toStartOf='parent'
+        app:layout_constraintEnd_toEndOf='parent'
+        android:layout_marginTop='16dp' />
+
+    <TextView
+        android:id='@+id/alarmInstruction'
+        android:layout_width='0dp'
+        android:layout_height='wrap_content'
+        android:text='@string/scan_to_stop'
+        android:textColor='@color/white'
+        android:textAppearance='@style/TextAppearance.Material3.TitleLarge'
+        android:textAlignment='center'
+        app:layout_constraintTop_toBottomOf='@id/timeClock'
+        app:layout_constraintStart_toStartOf='parent'
+        app:layout_constraintEnd_toEndOf='parent'
+        android:layout_marginTop='24dp' />
+
+    <Button
+        android:id='@+id/scanButton'
+        android:layout_width='0dp'
+        android:layout_height='wrap_content'
+        android:text='@string/stop_alarm'
+        app:layout_constraintBottom_toBottomOf='parent'
+        app:layout_constraintStart_toStartOf='parent'
+        app:layout_constraintEnd_toEndOf='parent'
+        android:layout_marginBottom='48dp' />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

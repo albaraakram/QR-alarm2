@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android Studio
+.idea/
+*.iml
+/local.properties
+.cxx/
+.externalNativeBuild/
+captures/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+
+# Keystores
+*.jks
+*.keystore
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+
+# Generated
+app/release/
+app/debug/
