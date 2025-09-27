@@ -1,24 +1,27 @@
-﻿<resources>
-    <string name='app_name'>Alarm QR</string>
-    <string name='alarm_time_label'>وقت المنبه</string>
-    <string name='set_alarm'>حدد الوقت</string>
-    <string name='select_ringtone'>اختر النغمة</string>
-    <string name='register_qr'>تسجيل رمز QR</string>
-    <string name='save_alarm'>حفظ</string>
-    <string name='alarm_active'>المنبه يعمل - الاعدادات مقفلة</string>
-    <string name='scan_to_stop'>امسح رمز QR لإيقاف المنبه</string>
-    <string name='alarm_stopped'>تم إيقاف المنبه</string>
-    <string name='missing_qr'>يجب تسجيل رمز QR أولاً</string>
-    <string name='missing_ringtone'>اختر نغمة للمنبه</string>
-    <string name='alarm_set'>تم ضبط المنبه</string>
-    <string name='alarm_service_channel'>تنبيه الاستيقاظ</string>
-    <string name='alarm_notification_title'>وقت الاستيقاظ</string>
-    <string name='alarm_notification_body'>يجب مسح رمز QR لإيقاف المنبه</string>
-    <string name='stop_alarm'>إيقاف المنبه</string>
-    <string name='alarm_toggle_label'>تشغيل المنبه</string>
-    <string name='alarm_in_time'>سيرن المنبه بعد %1 ساعة و%2 دقيقة</string>
-    <string name='alarm_requires_setup'>يرجى ضبط الوقت واختيار النغمة وتسجيل رمز QR أولاً</string>
-    <string name='alarm_disabled_toast'>تم إيقاف المنبه</string>
+<resources>
+    <string name="app_name">Alarm QR</string>
+    <string name="alarm_time_label">وقت المنبه</string>
+    <string name="set_alarm">حدد الوقت</string>
+    <string name="select_ringtone">اختر النغمة</string>
+    <string name="register_qr">تسجيل رمز QR</string>
+    <string name="save_alarm">حفظ</string>
+    <string name="alarm_active">المنبه يعمل - الإعدادات مقفلة</string>
+    <string name="scan_to_stop">امسح رمز QR لإيقاف المنبه</string>
+    <string name="alarm_stopped">تم إيقاف المنبه</string>
+    <string name="missing_qr">يرجى تسجيل رمز QR أولاً</string>
+    <string name="missing_ringtone">اختر نغمة للمنبه</string>
+    <string name="alarm_set">تم ضبط المنبه</string>
+    <string name="alarm_service_channel">تنبيه الاستيقاظ</string>
+    <string name="alarm_notification_title">وقت الاستيقاظ</string>
+    <string name="alarm_notification_body">يجب مسح رمز QR لإيقاف المنبه</string>
+    <string name="stop_alarm">إيقاف المنبه</string>
+    <string name="alarm_toggle_label">تشغيل المنبه</string>
+    <string name="alarm_in_time">سيرن المنبه بعد %1$d ساعة و%2$d دقيقة</string>
+    <string name="alarm_requires_setup">الرجاء ضبط الوقت واختيار النغمة وتسجيل رمز QR أولاً</string>
+    <string name="alarm_disabled_toast">تم إيقاف تشغيل المنبه</string>
     <string name="qr_prompt">وجّه الكاميرا نحو رمز QR</string>
+    <string name="permissions_required">يجب منح الصلاحيات المطلوبة لعمل التطبيق</string>
+    <string name="qr_saved">تم حفظ رمز QR</string>
+    <string name="qr_not_captured">لم يتم التقاط أي رمز</string>
+    <string name="alarm_enabled_toast">تم تشغيل المنبه</string>
 </resources>
-

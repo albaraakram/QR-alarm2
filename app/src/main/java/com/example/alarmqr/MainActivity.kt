@@ -1,4 +1,4 @@
-﻿package com.example.alarmqr
+package com.example.alarmqr
 
 import android.Manifest
 import android.app.AlarmManager
@@ -26,10 +26,11 @@ import java.util.Calendar
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
-    private fun formatDurationUntil(triggerAt: Long): Pair<Long, Long> {
-        val diff = triggerAt - System.currentTimeMillis()
-        val hours = if (diff > 0) diff / 3600000 else 0
-        val minutes = if (diff > 0) (diff % 3600000) / 60000 else 0
+    private fun formatDurationUntil(triggerAt: Long): Pair<Int, Int> {
+        val now = System.currentTimeMillis()
+        val diff = if (triggerAt > now) triggerAt - now else 0L
+        val hours = (diff / 3_600_000L).toInt()
+        val minutes = ((diff % 3_600_000L) / 60_000L).toInt()
         return hours to minutes
     }
 
@@ -53,10 +54,12 @@ class MainActivity : AppCompatActivity() {
     private var isAlarmActive: Boolean = false
     private var isAlarmEnabled: Boolean = false
 
-    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
         val denied = results.filterValues { !it }.keys
         if (denied.isNotEmpty()) {
-            Toast.makeText(this, "ظٹط¬ط¨ ظ…ظ†ط­ ط§ظ„طµظ„ط§ط­ظٹط§طھ ط§ظ„ظ…ط·ظ„ظˆط¨ط© ظ„ط¹ظ…ظ„ ط§ظ„طھط·ط¨ظٹظ‚", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.permissions_required), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -77,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         val contents = result.contents
         if (contents != null) {
             storedQrPayload = contents
-            Toast.makeText(this, "طھظ… ط­ظپط¸ ط±ظ…ط² QR", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.qr_saved), Toast.LENGTH_SHORT).show()
             lifecycleScope.launch {
                 preferences.updateAlarm(
                     timeMillis = selectedAlarmTimeMillis,
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         } else {
-            Toast.makeText(this, "ظ„ظ… ظٹطھظ… ط§ظ„طھظ‚ط§ط· ط±ظ…ط²", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.qr_not_captured), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -113,13 +116,17 @@ class MainActivity : AppCompatActivity() {
                         preferences.updateAlarm(triggerAt, uri.toString(), qr)
                         scheduler.schedule(triggerAt)
                         preferences.setEnabled(true)
-                        val (h,m) = formatDurationUntil(triggerAt)
+                        isAlarmEnabled = true
+                        val (h, m) = formatDurationUntil(triggerAt)
                         Toast.makeText(this@MainActivity, getString(R.string.alarm_in_time, h, m), Toast.LENGTH_LONG).show()
+                        updateUi()
                     }
                 }
             } else {
                 scheduler.cancel()
                 lifecycleScope.launch { preferences.setEnabled(false) }
+                isAlarmEnabled = false
+                updateUi()
                 Toast.makeText(this, getString(R.string.alarm_disabled_toast), Toast.LENGTH_SHORT).show()
             }
         }
@@ -138,7 +145,8 @@ class MainActivity : AppCompatActivity() {
                 selectedAlarmTimeMillis = config.alarmTimeMillis
                 selectedRingtoneUri = config.ringtoneUri?.toUri()
                 storedQrPayload = config.qrPayload
-                isAlarmActive = config.isActive\r\n                isAlarmEnabled = config.isEnabled
+                isAlarmActive = config.isActive
+                isAlarmEnabled = config.isEnabled
                 updateUi()
             }
         }
@@ -203,10 +211,14 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             preferences.updateAlarm(triggerAt, ringtoneUri.toString(), storedQrPayload)
+            preferences.setEnabled(true)
             scheduler.schedule(triggerAt)
-            Toast.makeText(this@MainActivity, getString(R.string.alarm_set), Toast.LENGTH_SHORT).show()
+            isAlarmEnabled = true
+            val (hours, minutes) = formatDurationUntil(triggerAt)
+            Toast.makeText(this@MainActivity, getString(R.string.alarm_in_time, hours, minutes), Toast.LENGTH_LONG).show()
+            binding.alarmEnabledSwitch.isChecked = true
+            updateUi()
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ensureExactAlarmPermission()
         }
