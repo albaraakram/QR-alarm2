@@ -75,7 +75,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/setTimeButton"
-                        style="?attr/materialButtonTonalStyle"
+                        style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
@@ -92,7 +92,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/selectRingtoneButton"
-                        style="?attr/materialButtonTonalStyle"
+                        style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/select_ringtone"
@@ -114,7 +114,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/registerQrButton"
-                        style="?attr/materialButtonTonalStyle"
+                        style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
@@ -131,7 +131,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/saveButton"
-                        style="?attr/materialButtonStyle"
+                        style="@style/Widget.Material3.Button.FilledButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/save_alarm"
