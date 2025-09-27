@@ -1,2 +1,22 @@
-﻿rootProject.name = 'AlarmQR'
-include(':app')
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+    plugins {
+        id("com.android.application") version "8.2.2"
+        id("org.jetbrains.kotlin.android") version "1.9.0"
+        id("org.jetbrains.kotlin.kapt") version "1.9.0"
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "AlarmQR"
+include(":app")
