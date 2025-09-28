@@ -40,7 +40,11 @@ class AlarmService : Service() {
         // Mark ringing state
         try {
             getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
-                .edit().putBoolean(MainActivity.KEY_IS_RINGING, true).apply()
+                .edit()
+                .putBoolean(MainActivity.KEY_IS_RINGING, true)
+                .putBoolean(MainActivity.KEY_ALARM_SCHEDULED, false)
+                .remove(MainActivity.KEY_ALARM_TIME_MILLIS)
+                .apply()
         } catch (_: Exception) {}
         // Request audio focus for alarm
         try {

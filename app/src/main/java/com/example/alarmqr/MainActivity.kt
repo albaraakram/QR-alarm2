@@ -8,18 +8,19 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
-import androidx.core.content.ContextCompat
 import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +32,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var resetQrBtn: Button
     private lateinit var audioStatus: ImageView
     private lateinit var qrStatus: ImageView
+
+    private lateinit var nextAlarmInfo: TextView
+    private lateinit var countdownText: TextView
+    private val countdownHandler = Handler(Looper.getMainLooper())
+    private val countdownRunnable = object : Runnable {
+        override fun run() {
+            if (updateCountdownUi()) {
+                countdownHandler.postDelayed(this, 1000L)
+            } else {
+                stopCountdownUpdates()
+            }
+        }
+    }
+    private var countdownRunning = false
 
     private var chosenAudio: Uri? = null
 
@@ -69,6 +84,8 @@ class MainActivity : AppCompatActivity() {
         resetQrBtn = findViewById(R.id.resetQrBtn)
         audioStatus = findViewById(R.id.audioStatus)
         qrStatus = findViewById(R.id.qrStatus)
+        nextAlarmInfo = findViewById(R.id.nextAlarmInfo)
+        countdownText = findViewById(R.id.countdownText)
 
         timePicker.setIs24HourView(false)
 
@@ -97,15 +114,25 @@ class MainActivity : AppCompatActivity() {
         timePicker.setOnTimeChangedListener { _, _, _ -> updateAlarmButton() }
 
         testQrBtn.setOnClickListener {
+            val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+            if (prefs.getBoolean(KEY_IS_RINGING, false)) {
+                Toast.makeText(this, getString(R.string.qr_change_blocked), Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
             startActivity(Intent(this, QrTestActivity::class.java))
         }
 
         resetQrBtn.setOnClickListener {
-            getSharedPreferences("alarmqr", Context.MODE_PRIVATE).edit()
+            val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+            if (prefs.getBoolean(KEY_IS_RINGING, false)) {
+                Toast.makeText(this, getString(R.string.qr_change_blocked), Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            prefs.edit()
                 .remove(KEY_QR_HASH)
                 .remove(KEY_QR_READY)
                 .apply()
-            Toast.makeText(this, "تمت إعادة تعيين رمز QR", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.qr_reset_done), Toast.LENGTH_SHORT).show()
             updateStatuses()
         }
     }
@@ -114,6 +141,11 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         updateStatuses()
         updateAlarmButton()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopCountdownUpdates()
     }
 
     private fun scheduleAlarmForSelectedTime() {
@@ -140,7 +172,12 @@ class MainActivity : AppCompatActivity() {
             .putLong(KEY_ALARM_TIME_MILLIS, cal.timeInMillis)
             .apply()
 
-        Toast.makeText(this, getString(R.string.alarm_set), Toast.LENGTH_LONG).show()
+        val remainingMillis = (cal.timeInMillis - System.currentTimeMillis()).coerceAtLeast(0L)
+        Toast.makeText(
+            this,
+            getString(R.string.alarm_will_ring_in, formatCountdownClock(remainingMillis)),
+            Toast.LENGTH_LONG
+        ).show()
         updateAlarmButton()
     }
 
@@ -161,7 +198,7 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
         val isRinging = prefs.getBoolean(KEY_IS_RINGING, false)
         if (isRinging) {
-            Toast.makeText(this, "الجرس يعمل — أوقفه بمسح رمز QR", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.qr_change_blocked), Toast.LENGTH_LONG).show()
             return
         }
         val qrReady = prefs.getString(KEY_QR_HASH, null) != null || prefs.getBoolean(KEY_QR_READY, false)
@@ -205,6 +242,57 @@ class MainActivity : AppCompatActivity() {
         onReady()
     }
 
+    private fun ensureCountdownUpdates() {
+        val shouldContinue = updateCountdownUi()
+        if (shouldContinue) {
+            if (!countdownRunning) {
+                countdownRunning = true
+                countdownHandler.postDelayed(countdownRunnable, 1000L)
+            }
+        } else {
+            stopCountdownUpdates()
+        }
+    }
+
+    private fun stopCountdownUpdates() {
+        if (countdownRunning) {
+            countdownHandler.removeCallbacks(countdownRunnable)
+            countdownRunning = false
+        }
+    }
+
+    private fun updateCountdownUi(): Boolean {
+        val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
+        val isRinging = prefs.getBoolean(KEY_IS_RINGING, false)
+        val scheduled = prefs.getBoolean(KEY_ALARM_SCHEDULED, false)
+        val targetMillis = prefs.getLong(KEY_ALARM_TIME_MILLIS, -1L)
+        if (!scheduled || targetMillis <= 0L || isRinging) {
+            nextAlarmInfo.visibility = View.GONE
+            countdownText.visibility = View.GONE
+            return false
+        }
+        val remaining = targetMillis - System.currentTimeMillis()
+        if (remaining <= 0L) {
+            nextAlarmInfo.visibility = View.GONE
+            countdownText.visibility = View.GONE
+            return false
+        }
+        val countdown = formatCountdownClock(remaining)
+        nextAlarmInfo.visibility = View.VISIBLE
+        nextAlarmInfo.text = getString(R.string.alarm_will_ring_in, countdown)
+        countdownText.visibility = View.VISIBLE
+        countdownText.text = countdown
+        return true
+    }
+
+    private fun formatCountdownClock(millis: Long): String {
+        val totalSeconds = millis / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format(Locale("ar"), "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+
     companion object {
         private const val KEY_AUDIO_URI = "audio_uri"
         const val KEY_QR_READY = "qr_ready"
@@ -237,14 +325,18 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("alarmqr", Context.MODE_PRIVATE)
         val isRinging = prefs.getBoolean(KEY_IS_RINGING, false)
         val timeStr = formatSelectedTime()
+        testQrBtn.isEnabled = !isRinging
+        resetQrBtn.isEnabled = !isRinging
         if (isRinging) {
             setAlarmBtn.isEnabled = false
             setAlarmBtn.text = "يَرِنّ — امسح QR"
+            ensureCountdownUpdates()
             return
         }
         setAlarmBtn.isEnabled = true
         val scheduled = prefs.getBoolean(KEY_ALARM_SCHEDULED, false)
         setAlarmBtn.text = if (scheduled) "إيقاف $timeStr" else "تشغيل $timeStr"
+        ensureCountdownUpdates()
     }
 
     private fun formatSelectedTime(): String {
@@ -254,7 +346,7 @@ class MainActivity : AppCompatActivity() {
         cal.set(Calendar.HOUR_OF_DAY, hour)
         cal.set(Calendar.MINUTE, minute)
         cal.set(Calendar.SECOND, 0)
-        val fmt = java.text.SimpleDateFormat("h:mm a", java.util.Locale("ar"))
+        val fmt = java.text.SimpleDateFormat("h:mm a", Locale("ar"))
         return fmt.format(cal.time)
     }
 
