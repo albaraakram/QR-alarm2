@@ -24,6 +24,8 @@ fastlane/screenshots
 .DS_Store
 Thumbs.db
 *.log
+gradle-*/
+jdk-*/
 
 # Generated
 app/release/

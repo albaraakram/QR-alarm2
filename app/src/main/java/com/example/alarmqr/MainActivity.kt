@@ -11,12 +11,16 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.example.alarmqr.data.AlarmPreferences
 import com.example.alarmqr.databinding.ActivityMainBinding
+import com.example.alarmqr.databinding.DialogSetPinBinding
+import com.example.alarmqr.databinding.DialogVerifyPinBinding
 import com.example.alarmqr.scheduler.AlarmScheduler
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.flow.collectLatest
@@ -53,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     private var storedQrPayload: String? = null
     private var isAlarmActive: Boolean = false
     private var isAlarmEnabled: Boolean = false
+    private var hasConfiguredPin: Boolean = false
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -139,6 +144,8 @@ class MainActivity : AppCompatActivity() {
         binding.selectRingtoneButton.setOnClickListener { pickRingtone() }
         binding.registerQrButton.setOnClickListener { startQrEnrollment() }
         binding.saveButton.setOnClickListener { saveAlarm() }
+        binding.setPinButton.setOnClickListener { showPinSetupDialog() }
+        binding.deleteAppButton.setOnClickListener { attemptAppDeletion() }
 
         lifecycleScope.launch {
             preferences.alarmConfig.collectLatest { config ->
@@ -147,6 +154,7 @@ class MainActivity : AppCompatActivity() {
                 storedQrPayload = config.qrPayload
                 isAlarmActive = config.isActive
                 isAlarmEnabled = config.isEnabled
+                hasConfiguredPin = !config.pinCodeHash.isNullOrEmpty()
                 updateUi()
             }
         }
@@ -254,6 +262,8 @@ class MainActivity : AppCompatActivity() {
             val (hours, minutes) = formatDurationUntil(it)
             getString(R.string.alarm_in_time, hours, minutes)
         } ?: ""
+
+        updatePinUi()
     }
 
     private fun resolveNextTriggerMillis(hour: Int, minute: Int): Long {
@@ -272,6 +282,100 @@ class MainActivity : AppCompatActivity() {
     private fun resolveRingtoneTitle(uri: Uri): String {
         val ringtone = RingtoneManager.getRingtone(this, uri)
         return ringtone?.getTitle(this) ?: uri.lastPathSegment.orEmpty()
+    }
+
+    private fun updatePinUi() {
+        binding.pinStatusValue.text = getString(
+            if (hasConfiguredPin) R.string.pin_status_set else R.string.pin_status_not_set
+        )
+        binding.deleteAppButton.isEnabled = hasConfiguredPin
+    }
+
+    private fun showPinSetupDialog() {
+        val dialogBinding = DialogSetPinBinding.inflate(layoutInflater)
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.pin_dialog_title)
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.save_pin_button, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                dialogBinding.newPinLayout.error = null
+                dialogBinding.confirmPinLayout.error = null
+                val pin = dialogBinding.newPinInput.text?.toString()?.trim().orEmpty()
+                val confirm = dialogBinding.confirmPinInput.text?.toString()?.trim().orEmpty()
+                if (!isPinFormatValid(pin)) {
+                    dialogBinding.newPinLayout.error = getString(R.string.pin_length_error)
+                    return@setOnClickListener
+                }
+                if (pin != confirm) {
+                    dialogBinding.confirmPinLayout.error = getString(R.string.pin_mismatch_error)
+                    return@setOnClickListener
+                }
+                lifecycleScope.launch {
+                    preferences.savePin(pin)
+                    hasConfiguredPin = true
+                    updatePinUi()
+                    Toast.makeText(this@MainActivity, getString(R.string.pin_saved_toast), Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+        }
+        dialog.show()
+    }
+
+    private fun attemptAppDeletion() {
+        if (!hasConfiguredPin) {
+            Toast.makeText(this, getString(R.string.pin_required_for_deletion), Toast.LENGTH_LONG).show()
+            return
+        }
+        showPinVerificationDialog()
+    }
+
+    private fun showPinVerificationDialog() {
+        val dialogBinding = DialogVerifyPinBinding.inflate(layoutInflater)
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.pin_verify_title)
+            .setMessage(R.string.delete_app_info)
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.delete_app_confirmation_button, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                dialogBinding.pinLayout.error = null
+                val candidate = dialogBinding.pinInput.text?.toString()?.trim().orEmpty()
+                if (!isPinFormatValid(candidate)) {
+                    dialogBinding.pinLayout.error = getString(R.string.pin_length_error)
+                    return@setOnClickListener
+                }
+                lifecycleScope.launch {
+                    val valid = preferences.isPinValid(candidate)
+                    if (valid) {
+                        dialog.dismiss()
+                        launchUninstallIntent()
+                    } else {
+                        dialogBinding.pinLayout.error = getString(R.string.pin_invalid_error)
+                    }
+                }
+            }
+        }
+        dialog.show()
+    }
+
+    private fun isPinFormatValid(pin: String): Boolean {
+        return pin.length in 4..8 && pin.all { it.isDigit() }
+    }
+
+    private fun launchUninstallIntent() {
+        val packageUri = Uri.parse("package:$packageName")
+        val intent = Intent(Intent.ACTION_DELETE, packageUri).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        startActivity(intent)
     }
 }
 

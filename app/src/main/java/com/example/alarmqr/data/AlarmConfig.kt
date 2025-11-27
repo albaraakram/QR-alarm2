@@ -5,7 +5,8 @@ data class AlarmConfig(
     val ringtoneUri: String?,
     val qrPayload: String?,
     val isActive: Boolean,
-    val isEnabled: Boolean
+    val isEnabled: Boolean,
+    val pinCodeHash: String?
 ) {
     fun hasCompleteSetup(): Boolean = alarmTimeMillis != null && ringtoneUri != null && qrPayload != null
 }

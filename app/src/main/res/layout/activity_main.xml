@@ -170,6 +170,65 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="12dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:id="@+id/pinSectionTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pin_section_title"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/pinStatusValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/pin_status_not_set"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="@color/purple_500" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/setPinButton"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/manage_pin_button"
+                        app:icon="@android:drawable/ic_lock_lock"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp"
+                        app:iconTint="@color/purple_500" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/deleteAppButton"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/delete_app_button"
+                        android:textColor="@color/white"
+                        app:backgroundTint="@color/alarm_red"
+                        app:icon="@android:drawable/ic_menu_delete"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp"
+                        app:iconTint="@color/white" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

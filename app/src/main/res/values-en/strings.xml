@@ -24,4 +24,22 @@
     <string name="qr_saved">QR code saved</string>
     <string name="qr_not_captured">No QR code captured</string>
     <string name="alarm_enabled_toast">Alarm enabled</string>
+    <string name="pin_section_title">Uninstall protection</string>
+    <string name="pin_status_not_set">PIN code not configured</string>
+    <string name="pin_status_set">PIN code saved</string>
+    <string name="manage_pin_button">Set / update PIN</string>
+    <string name="delete_app_button">Delete app</string>
+    <string name="pin_dialog_title">Protect deletion with a PIN</string>
+    <string name="save_pin_button">Save PIN</string>
+    <string name="pin_hint">Enter a 4-8 digit PIN</string>
+    <string name="pin_confirm_hint">Confirm PIN</string>
+    <string name="pin_length_error">PIN must be 4 to 8 digits</string>
+    <string name="pin_mismatch_error">The two PIN codes do not match</string>
+    <string name="pin_saved_toast">PIN saved</string>
+    <string name="pin_required_for_deletion">Set a PIN first before trying to delete the app</string>
+    <string name="pin_verify_title">Enter PIN to delete the app</string>
+    <string name="pin_verify_hint">PIN code</string>
+    <string name="delete_app_confirmation_button">Continue</string>
+    <string name="pin_invalid_error">Incorrect PIN</string>
+    <string name="delete_app_info">After a successful check the system uninstall screen will open.</string>
 </resources>

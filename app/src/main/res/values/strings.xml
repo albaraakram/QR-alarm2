@@ -24,4 +24,22 @@
     <string name="qr_saved">تم حفظ رمز QR</string>
     <string name="qr_not_captured">لم يتم التقاط أي رمز</string>
     <string name="alarm_enabled_toast">تم تشغيل المنبه</string>
+    <string name="pin_section_title">حماية حذف التطبيق</string>
+    <string name="pin_status_not_set">لم يتم تعيين رمز PIN بعد</string>
+    <string name="pin_status_set">تم تعيين رمز PIN</string>
+    <string name="manage_pin_button">تعيين / تغيير رمز PIN</string>
+    <string name="delete_app_button">حذف التطبيق</string>
+    <string name="pin_dialog_title">حماية الحذف برمز PIN</string>
+    <string name="save_pin_button">حفظ الرمز</string>
+    <string name="pin_hint">أدخل رمز PIN (٤ إلى ٨ أرقام)</string>
+    <string name="pin_confirm_hint">أعد إدخال رمز PIN</string>
+    <string name="pin_length_error">يجب أن يتكون رمز PIN من ٤ إلى ٨ أرقام</string>
+    <string name="pin_mismatch_error">الرمزان غير متطابقين</string>
+    <string name="pin_saved_toast">تم حفظ رمز PIN</string>
+    <string name="pin_required_for_deletion">قم بتعيين رمز PIN أولاً قبل محاولة حذف التطبيق</string>
+    <string name="pin_verify_title">أدخل رمز PIN لحذف التطبيق</string>
+    <string name="pin_verify_hint">رمز PIN</string>
+    <string name="delete_app_confirmation_button">متابعة الحذف</string>
+    <string name="pin_invalid_error">رمز PIN غير صحيح</string>
+    <string name="delete_app_info">بعد التحقق من الرمز سيتم توجيهك لشاشة النظام لحذف التطبيق.</string>
 </resources>

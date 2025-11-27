@@ -9,7 +9,9 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import java.security.MessageDigest
 
 private val Context.alarmDataStore: DataStore<Preferences> by preferencesDataStore(name = "alarm_prefs")
 
@@ -20,6 +22,7 @@ class AlarmPreferences(private val context: Context) {
     private val qrPayloadKey = stringPreferencesKey("qr_payload")
     private val alarmActiveKey = booleanPreferencesKey("alarm_active")
     private val alarmEnabledKey = booleanPreferencesKey("alarm_enabled")
+    private val pinCodeKey = stringPreferencesKey("pin_code_hash")
 
     val alarmConfig: Flow<AlarmConfig> = context.alarmDataStore.data.map { prefs ->
         AlarmConfig(
@@ -27,7 +30,8 @@ class AlarmPreferences(private val context: Context) {
             ringtoneUri = prefs[ringtoneUriKey],
             qrPayload = prefs[qrPayloadKey],
             isActive = prefs[alarmActiveKey] ?: false,
-            isEnabled = prefs[alarmEnabledKey] ?: false
+            isEnabled = prefs[alarmEnabledKey] ?: false,
+            pinCodeHash = prefs[pinCodeKey]
         )
     }
 
@@ -52,6 +56,7 @@ class AlarmPreferences(private val context: Context) {
             prefs.remove(qrPayloadKey)
             prefs[alarmActiveKey] = false
             prefs[alarmEnabledKey] = false
+            prefs.remove(pinCodeKey)
         }
     }
 
@@ -65,5 +70,28 @@ class AlarmPreferences(private val context: Context) {
         context.alarmDataStore.edit { prefs ->
             prefs[alarmEnabledKey] = enabled
         }
+    }
+
+    suspend fun savePin(pin: String) {
+        context.alarmDataStore.edit { prefs ->
+            prefs[pinCodeKey] = hashPin(pin)
+        }
+    }
+
+    suspend fun clearPin() {
+        context.alarmDataStore.edit { prefs ->
+            prefs.remove(pinCodeKey)
+        }
+    }
+
+    suspend fun isPinValid(candidate: String): Boolean {
+        val storedHash = context.alarmDataStore.data.map { it[pinCodeKey] }.firstOrNull()
+        return storedHash != null && storedHash == hashPin(candidate)
+    }
+
+    private fun hashPin(pin: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hash = digest.digest(pin.toByteArray(Charsets.UTF_8))
+        return hash.joinToString(separator = "") { byte -> "%02x".format(byte) }
     }
 }
